@@ -50,6 +50,15 @@ $app->post('/admin/login', function() {
 	User::login($_POST["login"], $_POST["password"]);//metodo p receber o post do formulario login, e post da senha
 
 	header("Location: /admin");
+	exit;
+});
+
+$app->get('/admin/logout', function(){
+
+	User::logout();
+
+	header("Location: /admin/login");
+	exit;
 });
 
 $app->run();
