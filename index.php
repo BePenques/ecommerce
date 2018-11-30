@@ -91,6 +91,15 @@ $app->get("/admin/users/:iduser/delete", function($iduser){//deletar dados
 
 	User::verifyLogin();
 
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$user->delete();//metodo que vai deletar;
+
+	header("Location: /admin/users");
+	exit;
+
 
 });
 
@@ -98,9 +107,15 @@ $app->get("/admin/users/:iduser", function($iduser){//rota update
 
 	User::verifyLogin();
 
+	$user = new User();
+
+	$user->get((int)$iduser);
+
 	$page = new PageAdmin();
 
-	$page->setTpl("users-update");
+	$page->setTpl("users-update", array(
+		"user"=>$user->getValues()
+	));
 
 
 });
@@ -109,6 +124,22 @@ $app->post("/admin/users/create", function(){//inserir dados
 
 	User::verifyLogin();
 
+	//var_dump($_POST);
+
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->setData($_POST);//criar os setters do array $_POST
+
+
+	$user->save();//executa o insert dentro do banco
+
+	//var_dump($user);
+
+	header("Location: /admin/users");//redireciona para a pagina de listagem de usuarios
+	exit;
+
 
 });
 
@@ -116,11 +147,103 @@ $app->post("/admin/users/:iduser", function($iduser){//alterar dados
 
 	User::verifyLogin();
 
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->get((int)$iduser);
+
+	$user->setData($_POST);
+
+	$user->update();//metodo para atualizar
+
+	header("Location:/admin/users");
+	exit;
+
 
 });
 
+$app->get("/admin/forgot", function(){
 
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);//desabilita o metodo construtor, pois não precisa de header nem footer, é uma pagina unica
+
+	$page->setTpl("forgot");	
+
+});
+
+$app->post("/admin/forgot", function(){
+
+	
+
+	$user = User::getForgot($_POST["email"]);//metodo que recebe email por parametro
+
+	header("Location: /admin/forgot/sent");
+	exit;
+
+});
+
+$app->get("/admin/forgot/sent", function(){
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);//desabilita o metodo construtor, pois não precisa de header nem footer, é uma pagina unica
+
+	$page->setTpl("forgot-sent");	
+
+});
+
+$app->get("/admin/forgot/reset", function(){
+
+	$user = User::valideForgotDecrypt($_GET["code"]);//metodo para validar de que usuario pertence esse codigo
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);//desabilita o metodo construtor, pois não precisa de header nem footer, é uma pagina unica
+
+	$page->setTpl("forgot-reset", array(
+		"name"=>$user["desperson"],
+		"code"=>$_GET["code"]
+	));	
+
+});
+
+$app->post("/admin/forgot/reset", function(){
+
+	$forgot = User::valideForgotDecrypt($_POST["code"]);
+
+	User::setForgotUsed($forgot["idrecovery"]);//metodo para falar que esse metodo de recuperação já foi usado
+
+	$user = new User(); //carrega um obj do tipo usuario
+
+	$user->get((int)$forgot["iduser"]);//cria os setters
+
+	$password = password_hash($_POST["password"], PASSWORD_DEFAULT, ["cost"=>12
+	]);//criptografar antes de salvar no banco
+
+	$user->setPassword($password);//função para salvar a a nova senha
+
+		$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);//desabilita o metodo construtor, pois não precisa de header nem footer, é uma pagina unica
+
+	$page->setTpl("forgot-reset-success");
+
+
+});
 
 $app->run();
 
  ?>
+
+
+
+
+
+
+
