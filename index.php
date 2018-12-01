@@ -12,6 +12,8 @@ use \Hcode\PageAdmin;
 
 use \Hcode\Model\User;
 
+use \Hcode\Model\Category;
+
 $app = new Slim();
 
 $app->config('debug', true);
@@ -233,6 +235,43 @@ $app->post("/admin/forgot/reset", function(){
 	]);//desabilita o metodo construtor, pois não precisa de header nem footer, é uma pagina unica
 
 	$page->setTpl("forgot-reset-success");
+
+
+});
+
+//rota para acessar template de categorias
+$app->get("/admin/categories", function(){
+
+	$categories = Category::listAll();//uma classe Category com o metodo ListAll
+
+	$page = new PageAdmin();
+
+	$page->setTpl("categories", [
+		'categories'=>$categories//o template recebe um array
+	]);
+
+
+});
+
+$app->get("/admin/categories/create", function(){//rota para criar categoria
+
+	$page = new PageAdmin();
+
+	$page->setTpl("categories-create");
+
+
+});
+
+$app->post("/admin/categories/create", function(){//rota para criar categoria
+
+	$category = new Category();
+
+	$category->setData($_POST);
+
+	$category->save();
+
+	header('Location: /admin/categories');
+	exit;
 
 
 });

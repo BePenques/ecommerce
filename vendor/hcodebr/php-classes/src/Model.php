@@ -14,7 +14,7 @@ class Model {
 		switch($method)
 		{
 			case "get":
-				return $this->values[$fieldname];
+				return (isset($this->values[$fieldname]))?$this->values[$fieldName] : NULL;
 			break;
 
 			case "set":
