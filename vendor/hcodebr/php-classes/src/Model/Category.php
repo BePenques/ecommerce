@@ -16,7 +16,7 @@ class Category extends Model{
 
 			$sql = new Sql();
 
-			return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson");
+			return $sql->select("SELECT * FROM tb_categories  ORDER BY descategory");
 		}
 		
 		public function save()//função para salvar os dados no banco
@@ -40,6 +40,29 @@ class Category extends Model{
 			));
 
 			$this->setData($results[0]);
+		}
+
+
+
+		public function get($idcategory)
+		{
+			$sql = new Sql();
+
+			$results = $sql->select("SELECT * FROM tb_categories WHERE idcategory = :idcategory", [
+				':idcategory'=>$idcategory
+			]);
+
+			$this->setData($results[0]); //criar os setters(colocar os dados dentro do obj)
+
+		}
+
+		public function delete()
+		{
+			$sql = new Sql();
+
+			$sql->query("DELETE FROM tb_categories WHERE idcategory = :idcategory", [
+				":idcategory"=>$this->getidcategory()//pegar do proprio objeto
+			]);
 		}
 
 		
