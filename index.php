@@ -11,6 +11,7 @@ $app = new Slim();
 $app->config('debug', true);
 
 
+require_once("functions.php");
 require_once("rotas_site.php");
 require_once("rotas_admin.php");
 require_once("rotas_admin-users.php");

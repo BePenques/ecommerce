@@ -18,6 +18,21 @@ class Product extends Model{
 
 			return $sql->select("SELECT * FROM tb_products  ORDER BY desproduct");
 		}
+
+		public static function checkList($list)
+		{
+			foreach ($list as &$row) {
+
+				$p = new Product();
+				$p->setData($row);//cria os setters, cria o obejto
+				$row = $p->getValues();//verifica se existe a foto
+				
+			}
+
+			return $list;//retorna o array list com os dados de cada produto já formatado
+		}
+
+	
 		
 		public function save()//função para salvar os dados no banco
 		{
