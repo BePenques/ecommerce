@@ -138,13 +138,13 @@ class Category extends Model{
 
 						]);
 
-			$resultTotal = $sql->select("SELECT FOUND_ROWS() AS TOTAL");
+			$resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal");
 
 			return [
 					'data'=>Product::checkList($results), //produtos da pagina
 					'total'=>(int)$resultTotal[0]["nrtotal"],//total de produtos
 					'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage) //qto cada pagina tera de produtos
-				   ];
+				   ];//ceil - converte arredondando para cima
 
 		}
 		
