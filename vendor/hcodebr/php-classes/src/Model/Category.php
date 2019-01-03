@@ -8,6 +8,8 @@ use \Hcode\Model;
 
 use \Hcode\Mailer;
 
+
+
 class Category extends Model{
 
 
@@ -106,14 +108,44 @@ class Category extends Model{
 				return $sql->select("SELECT * 
 								FROM tb_products 
 								WHERE idproduct NOT IN ( SELECT a.idproduct
-													   FROM tb_products a
-												 INNER JOIN tb_productscategories b
-														 ON b.idproduct = a.idproduct
-													  WHERE b.idcategory = 5);",[
-													  	'idcategory'=>$this->getidcategory()
+														   FROM tb_products a
+													 INNER JOIN tb_productscategories b
+															 ON b.idproduct = a.idproduct
+														  WHERE b.idcategory = 5);",[
+														  	'idcategory'=>$this->getidcategory()
 							]);
 
 			}
+		}
+
+		public function getProductsPage($page = 1, $itemsPerPage = 3)//função para paginação - qual a pagina e quantos itens por pagina
+		{
+
+			$start = ($page - 1) * $itemsPerPage;
+
+			$sql = new Sql();
+
+			$results = $sql->select("
+
+							SELECT SQL_CALC_FOUND_ROWS * FROM tb_products a 
+							INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct
+							INNER JOIN tb_categories c ON c.idcategory = b.idcategory
+							WHERE c.idcategory = :idcategory
+						    LIMIT $start, $itemsPerPage;
+
+						", [
+							'idcategory'=>$this->getidcategory()
+
+						]);
+
+			$resultTotal = $sql->select("SELECT FOUND_ROWS() AS TOTAL");
+
+			return [
+					'data'=>Product::checkList($results), //produtos da pagina
+					'total'=>(int)$resultTotal[0]["nrtotal"],//total de produtos
+					'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage) //qto cada pagina tera de produtos
+				   ];
+
 		}
 		
 		
