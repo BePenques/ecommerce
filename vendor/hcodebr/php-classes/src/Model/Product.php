@@ -162,6 +162,30 @@ class Product extends Model{
 		}
 		
 		
-}
+
+
+		public function getFromUrl($desurl){//tra o produto a partir da URL informada
+
+			$sql = new Sql();
+
+			$rows = $sql->select("SELECT * FROM tb_products WHERE desurl = :desurl", [
+				':desurl'=>$desurl
+			]);
+
+			$this->setData($rows[0]);//colocar a informação num objeto produto
+
+		}
+
+		public function getCategories()//metoro para trazer a categoria do produto
+		{
+
+			$sql = new Sql();
+
+			return $sql->select("
+				SELECT * FROM tb_categories a INNER JOIN tb_productscategories b ON a.idcategory = b.idcategory WHERE b.idproduct = :idproduct", [
+					':idproduct'=>$this->getidproduct()
+				]);
+		}
+}		
 
 ?>

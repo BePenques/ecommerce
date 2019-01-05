@@ -1,6 +1,5 @@
 <?php
 
-use \Hcode\Model;
 
 function formatPrice(float $vlprice)//função para formatar preço
 {
