@@ -37,36 +37,38 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    {loop=$products}
                                     <tr class="cart_item">
                                         <td class="product-remove">
-                                            <a title="Remove this item" class="remove" href="#">×</a> 
+                                            <a title="Remove this item" class="remove" href="/cart/<?php echo htmlspecialchars( $value["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove">×</a> 
                                         </td>
 
                                         <td class="product-thumbnail">
-                                            <a href="#"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="/res/site/img/product-thumb-2.jpg"></a>
+                                            <a href="/products/<?php echo htmlspecialchars( $value["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="<?php echo htmlspecialchars( $value["desphoto"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"></a>
                                         </td>
 
                                         <td class="product-name">
-                                            <a href="#">Ship Your Idea</a> 
+                                            <a href="/products/<?php echo htmlspecialchars( $value["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a> 
                                         </td>
 
                                         <td class="product-price">
-                                            <span class="amount">$700.00</span> 
+                                            <span class="amount">R$ <?php echo formatPrice($value["vlprice"]); ?></span> 
                                         </td>
 
                                         <td class="product-quantity">
                                             <div class="quantity buttons_added">
-                                                <input type="button" class="minus" value="-" onclick="window.location.href = '#'">
-                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="1" min="0" step="1">
-                                                <input type="button" class="plus" value="+" onclick="window.location.href = '#'">
+                                                <input type="button" class="minus" value="-" onclick="window.location.href = '/cart/:idproduct/minus'">
+                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="<?php echo htmlspecialchars( $value["nrqtd"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" min="0" step="1">
+                                                <input type="button" class="plus" value="+" onclick="window.location.href = '/cart/:idproduct/add'">
                                             </div>
                                         </td>
 
                                         <td class="product-subtotal">
-                                            <span class="amount">$700.00</span> 
+                                            <span class="amount">R$ <?php echo formatPrice($value["vltotal"]); ?></span> 
                                         </td>
                                     </tr>
+                                    <?php } ?>
+
                                     
                                 </tbody>
                             </table>
