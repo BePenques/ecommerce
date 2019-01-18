@@ -72,7 +72,7 @@ $app->get("/cart", function(){
 
 	$cart = Cart::getFromSession();
 
-	$page = new Page();
+    $page = new Page();
 
 	$page->setTpl("cart", [
 		'cart'=>$cart->getvalues(),
@@ -82,11 +82,18 @@ $app->get("/cart", function(){
 });
 
 $app->get("/cart/:idproduct/add", function($idproduct){//rota para add no carrinho
+	
 	$product = new product();
 
 	$product->get((int)$idproduct);
 
 	$cart = Cart::getFromSession();
+
+	$qtd = (isset($_GET['qtd'])) ? (int)$_GET['qtd'] : 1;
+
+	for ($i=0; $i < $qtd; $i++) { 
+		$cart->addProduct($product);
+	}
 
 	$cart->addProduct($product);
 
@@ -119,6 +126,17 @@ $app->get("/cart/:idproduct/remove", function($idproduct){//rota para remover ap
 	$cart->addProduct($product, true);
 
 	header("Location: /cart");
+	exit;
+
+});
+
+$app->post("/cart/freight", function(){
+
+	$cart = Cart::getFromSession();
+
+	$cart->setFreight($_POST['zipcode']);
+
+	header("Location:/cart");
 	exit;
 
 });

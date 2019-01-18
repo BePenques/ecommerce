@@ -143,16 +143,83 @@ class Cart extends Model{
 	{
 		$sql = new Sql();
 
-		return product::checkList($sql->select("SELECT b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllenght, b.weight, b.desurl, COUNT(*) AS nrqtd, SUM(b.vlprice) AS vltotal
+
+	
+
+		return product::checkList($sql->select("SELECT b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.desurl, COUNT(*) AS nrqtd, SUM(b.vlprice) AS vltotal
 		                      FROM tb_cartsproducts a 
 		                INNER JOIN tb_products b 
 		                        ON a.idproduct = b.idproducts 
 		                     WHERE a.idcart = :idcart 
 		                       AND a.dtremoved IS NULL 
-		                  GROUP BY b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllenght, b.weight, b.url
+		                  GROUP BY b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.url
 		                  ORDER BY b.desproduct ", [
 		                  	':idcart'=>$this->getidcart()
 		                  ]));
+	}
+
+	public function getProductsTotals()
+	{
+		$sql = new Sql();
+
+		$results = $sql->select(" SELECT SUM(vlprice) AS vlprice, SUM(vlwidth) AS vlwidth, SUM(vlheight) AS vlheight, SUM(vllength) AS vllength, SUM(vlweight) AS vlweight, COUNT(*) AS nrqtd 
+									FROM tb_products a
+							  INNER JOIN tb_cartsproducts b 
+							          ON a.idproduct = b.idproduct
+							       WHERE b.idcart = :idcart
+							         AND dtremoved IS NULL
+
+			", [
+				':idcart'=>$this->getidcart()
+			]);
+
+
+		if(count($results) > 0)
+		{
+			return $results[0];
+		}else
+		{
+			return [];
+		}
+	}
+
+	public function setFreight($nrzipcode)
+	{
+		$nrzipcode = str_replace('-','.', $nrzipcode);
+
+		$totals = $this->getProductsTotals();
+
+		if($totals['nrqtd'] > 0)
+		{
+			$qs = http_build_query([
+
+				'nCdEmpresa'=>'',
+				'sDsSenha'=>'',
+				'nCdServico'=>'40010',
+				'sCepOrigem'=>'16402-285',
+				'sCepDestino'=>$nrzipcode,
+				'nVlPeso'=>$totals['vlweight'],
+				'nCdFormato'=>'1',
+				'nVlComprimento'=>$totals['vllength'],
+				'nVlAltura'=>$totals['vlheight'],
+				'nVlLargura'=>$totals['vlwidth'],
+				'nVlDiametro'=>'',
+				'sCdMaoPropria'=>'S',
+				'nVlValorDeclarado'=>'S',
+				'sCdAvisoRecebimento'=>'S'
+
+
+			      ]);//função para montar parametros da URL
+
+			$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?.$qs"); //função para ler XML
+
+			var_dump($xml);
+			exit;
+
+		}else
+		{
+
+		}
 	}
 }
 
