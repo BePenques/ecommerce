@@ -15,6 +15,7 @@ use \Hcode\Model\User;
 class Cart extends Model{
 
 	const SESSION = "Cart";
+	const SESSION_ERROR = "CartError";
 
 	//metodo para ver se precisa de um carrinho novo ou se já possui um
 	public static function getFromSession()
@@ -117,6 +118,10 @@ class Cart extends Model{
 			':idproduct'=>$product->getidproduct()
 		]);
 
+		//forçar atualização do frete quando for adicionado 1 item
+
+		$this->getCalculateTotal();
+
 	}
 
 	public function removeProduct(Product $product, $all = false)
@@ -136,6 +141,10 @@ class Cart extends Model{
 				'idproduct'=>$product->getidproduct()
 			]);
 		}
+
+			//forçar atualização do frete quando for excluido 1 item
+
+		$this->getCalculateTotal();
 
 	}
 
@@ -191,6 +200,16 @@ class Cart extends Model{
 
 		if($totals['nrqtd'] > 0)
 		{
+
+			if($totals['vlheight'] < 2)
+			{
+				$totals['vlheight'] = 2;
+			}
+			if($totals['vllength'] < 16)
+			{
+				$totals['vllength'] = 16;
+			}
+
 			$qs = http_build_query([
 
 				'nCdEmpresa'=>'',
@@ -203,9 +222,9 @@ class Cart extends Model{
 				'nVlComprimento'=>$totals['vllength'],
 				'nVlAltura'=>$totals['vlheight'],
 				'nVlLargura'=>$totals['vlwidth'],
-				'nVlDiametro'=>'',
+				'nVlDiametro'=>'0',
 				'sCdMaoPropria'=>'S',
-				'nVlValorDeclarado'=>'S',
+				'nVlValorDeclarado'=>$totals['vlprice'],
 				'sCdAvisoRecebimento'=>'S'
 
 
@@ -213,13 +232,78 @@ class Cart extends Model{
 
 			$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?.$qs"); //função para ler XML
 
-			var_dump($xml);
-			exit;
+			$result = $xml->Servicos->cServico;
+
+			if($result->MsgErro != '')
+			{
+				Cart::setMsgError($result->MsgErro);
+			}else
+			{
+				Cart::clearMsgError();
+			}
+
+			$this->setnrdays($result->PrazoEntrega);
+			$this->setvlfreight(Cart::formatValueToDecimal($result->Valor));
+			$this->setdeszipcode($nrzipcode);
+
+			$this->save();
+
+			return $result;
 
 		}else
 		{
 
 		}
+	}
+
+	public static function formatValueToDecimal($value):float
+	{
+		$value = str_replace('.','', $value);
+		return str_replace(',', '.', $value);
+	}
+
+	public static function setMsgError($msg)
+	{
+		$_SESSION[Cart::SESSION_ERROR] = $msg;
+	}
+
+	public static function getMsgError()
+	{
+		$msg =  (isset($_SESSION[Cart::SESSION_ERROR])) ? $_SESSION[Cart::SESSION_ERROR] : "";
+
+		Cart::clearMsgError();
+
+		return $msg;
+	}
+
+	public static function clearMsgError()
+	{
+		$_SESSION[Cart::SESSION_ERROR] = NULL;
+	}
+
+	public function updateFreight()
+	{
+		if ($this->getdeszipcode() != '')
+		{
+			$this->setFreight($this->getdeszipcode());
+		}
+	}
+
+	public function getValues()
+	{
+		$this->getCalculateTotal();
+
+		return parent::getValues();
+	}
+
+	public function getCalculateTotal()
+	{
+		$this->updateFreight();
+
+		$totals = $this->getProductsTotals();
+
+		$this->setvlsubtotal($totals['vlprice']);
+		$this->setvltotal($totals['vlprice'] + $this->getvlfreight());
 	}
 }
 
