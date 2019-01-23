@@ -94,17 +94,17 @@
                                         <tbody>
                                             <tr class="cart-subtotal">
                                                 <th>Subtotal</th>
-                                                <td><span class="amount">R$ {function="formatPrice($cart.vlsubtotal)"}</span></td>
+                                                <td><span class="amount">{if="$cart.vlsubtotal != null"} R$ {function="formatPrice($cart.vlsubtotal)"} {/if}</span></td>
                                             </tr>
 
                                             <tr class="shipping">
                                                 <th>Frete</th>
-                                                <td>R$ {function="formatPrice($cart.vlfreight)"}  {if="{$cart.nrdays} > 0"} <small>prazo de {$cart.nrdays} dia(s)</small>{/if}</td>
-                                            </tr>
+
+                                                <td>R$ {$cart.vlfreight}  {if="$cart.nrdays > 0"} <small>prazo de {$cart.nrdays} dia(s)</small>{/if}</td>
 
                                             <tr class="order-total">
                                                 <th>Total</th>
-                                                <td><strong><span class="amount">R$ {function="formatPrice($cart.vltotal)"}</span></strong> </td>
+                                                <td><strong><span class="amount">{if="$cart.vltotal != null"} R$ {function="formatPrice($cart.vltotal)"} {/if} </span></strong> </td>
                                             </tr>
                                         </tbody>
                                     </table>
