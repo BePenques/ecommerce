@@ -5,6 +5,7 @@ use \Hcode\Model\Product;
 use \Hcode\Model\Category;
 use \Hcode\Model\Cart;
 use \Hcode\Model\Address;
+use \Hcode\Model\User;
 
 
 $app->get('/', function() {
@@ -111,21 +112,21 @@ $app->get("/cart/:idproduct/minus", function($idproduct){//rota para remover ape
 
 	$cart = Cart::getFromSession();
 
-	$cart->addProduct($product);
+	$cart->removeProduct($product);
 
 	header("Location: /cart");
 	exit;
 
 });
 
-$app->get("/cart/:idproduct/remove", function($idproduct){//rota para remover apenas um produto do carrinho
+$app->get("/cart/:idproduct/remove", function($idproduct){//rota para remover todos os produto do carrinho
 	$product = new product();
 
 	$product->get((int)$idproduct);
 
 	$cart = Cart::getFromSession();
 
-	$cart->addProduct($product, true);
+	$cart->removeProduct($product, true);
 
 	header("Location: /cart");
 	exit;
@@ -145,7 +146,7 @@ $app->post("/cart/freight", function(){
 
 $app->get("/checkout", function(){
 
-	User::verifyLogin();
+	User::verifyLogin(false);
 
 	$cart = Cart::getFromSession();
 
@@ -158,6 +159,41 @@ $app->get("/checkout", function(){
 		'address'=>$address->getValues()
 
 	]);
+
+});
+
+$app->get("/login", function(){
+
+
+	$page = new Page();
+
+	$page->setTpl("login", [
+		'error'=>User::getError()
+	]);
+
+});
+
+$app->post("/login", function(){
+
+	try{
+
+	User::login($_POST['login'], $_POST['password']);
+
+    }catch(Exception $e){
+
+    	User::setError($e->getMessage()); 
+
+    }
+
+	header("Location: /checkout");
+	exit;
+});
+
+$app->get("/logout", function(){
+
+	User::logout();
+
+   header("Location: /login");
 
 });
 

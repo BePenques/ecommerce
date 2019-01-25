@@ -99,8 +99,11 @@ class User extends Model{
 			if (User::checkLogin($inadmin))
 			{
 				header("Location: /admin/login");
-				exit;
+				
+			}else{
+				header("Location: /login");
 			}
+			exit;
 			
 		}
 
@@ -132,9 +135,9 @@ class User extends Model{
 
 			$results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 
-				":desperson"=>$this->getdesperson(),
+				":desperson"=>utf8_decode($this->getdesperson()),
 				":deslogin"=>$this->getdeslogin(),
-				":despassword"=>$this->getdespassword(),
+				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
 				":nrphone"=>$this->getnrphone(),
 				":inadmin"=>$this->getinadmin()
@@ -170,9 +173,9 @@ class User extends Model{
 
 			$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 				":iduser"=>$this->getiduser(),
-				":desperson"=>$this->getdesperson(),
+				":desperson"=>utf8_decode($this->getdesperson()),
 				":deslogin"=>$this->getdeslogin(),
-				":despassword"=>$this->getdespassword(),
+				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
 				":nrphone"=>$this->getnrphone(),
 				":inadmin"=>$this->getinadmin()
@@ -299,6 +302,13 @@ class User extends Model{
 				":password"=>$password,
 				":iduser"=>$this->getiduser()
 			));
+		}
+
+		public function getPasswordHash($password)
+		{
+			return password_hash($password, PASSWORD_DEFAULT, [
+				'cost'=>12
+			]);
 		}
 }
 

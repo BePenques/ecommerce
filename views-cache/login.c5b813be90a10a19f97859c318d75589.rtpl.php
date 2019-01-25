@@ -1,4 +1,4 @@
- 
+<?php if(!class_exists('Rain\Tpl')){exit;}?> 
 <div class="product-big-title-area">
     <div class="container">
         <div class="row">
@@ -16,13 +16,6 @@
     <div class="container">
         <div class="row">                
             <div class="col-md-6">
-
-                {if="$error != ''"}
-                <div class="alert alert-danger">
-                    {$error}
-                </div>
-                {/if}
-
                 <form action="/login" id="login-form-wrap" class="login" method="post">
                     <h2>Acessar</h2>
                     <p class="form-row form-row-first">

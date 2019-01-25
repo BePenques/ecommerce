@@ -55,19 +55,23 @@
                                         </td>
 
                                         <td class="product-price">
-                                            <span class="amount">R$ <?php echo formatPrice($value1["vlprice"]); ?></span> 
+                                            <span class="amount">  R$ <?php echo formatPrice($value1["vlprice"]); ?></span> 
                                         </td>
 
                                         <td class="product-quantity">
                                             <div class="quantity buttons_added">
+
                                                 <input type="button" class="minus" value="-" onclick="window.location.href = '/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/minus'">
+
                                                 <input type="number" size="4" class="input-text qty text" title="Qty" value="<?php echo htmlspecialchars( $value1["nrqtd"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" min="0" step="1">
+
                                                 <input type="button" class="plus" value="+" onclick="window.location.href = '/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/add'">
+
                                             </div>
                                         </td>
 
                                         <td class="product-subtotal">
-                                            <span class="amount">R$ <?php echo formatPrice($value1["vltotal"]); ?></span> 
+                                            <span class="amount"> R$ <?php echo formatPrice($value1["vltotal"]); ?></span> 
                                         </td>
                                     </tr>
                                     <?php } ?>

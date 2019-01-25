@@ -158,10 +158,10 @@ class Cart extends Model{
 		return product::checkList($sql->select("SELECT b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.desurl, COUNT(*) AS nrqtd, SUM(b.vlprice) AS vltotal
 		                      FROM tb_cartsproducts a 
 		                INNER JOIN tb_products b 
-		                        ON a.idproduct = b.idproducts 
+		                        ON a.idproduct = b.idproduct 
 		                     WHERE a.idcart = :idcart 
 		                       AND a.dtremoved IS NULL 
-		                  GROUP BY b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.url
+		                  GROUP BY b.idproduct , b.desproduct, b.vlprice, b.vlwidth, b.vlheight, b.vllength, b.vlweight, b.desurl
 		                  ORDER BY b.desproduct ", [
 		                  	':idcart'=>$this->getidcart()
 		                  ]));
@@ -230,7 +230,7 @@ class Cart extends Model{
 
 			      ]);//função para montar parametros da URL
 
-			$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?.$qs"); //função para ler XML
+			$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs); //função para ler XML
 
 			$result = $xml->Servicos->cServico;
 
