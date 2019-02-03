@@ -154,11 +154,21 @@ $app->get("/checkout", function(){
 
 	$page = new Page();
 
+	
+	if (!$address->getdesaddress()) $address->setdesaddress('');
+if (!$address->getdescomplement()) $address->setdescomplement('');
+if (!$address->getdesdistrict()) $address->setdesdistrict('');
+if (!$address->getdescity()) $address->setdescity('');
+if (!$address->getdesstate()) $address->setdesstate('');
+if (!$address->getdescountry()) $address->setdescountry('');
+if (!$address->getdeszipcode()) $address->setdeszipcode('');
+
 	$page->setTpl("checkout", [
 		'cart'=>$cart->getvalues(),
 		'address'=>$address->getValues()
 
 	]);
+
 
 });
 
@@ -177,11 +187,11 @@ $app->post("/login", function(){
 
 	try{
 
-	User::login($_POST['login'], $_POST['password']);
+			User::login($_POST['login'], $_POST['password']);
 
     }catch(Exception $e){
 
-    	User::setError($e->getMessage()); 
+    		User::setError($e->getMessage()); 
 
     }
 
@@ -193,8 +203,8 @@ $app->get("/logout", function(){
 
 	User::logout();
 
-   header("Location: /login");
-
+   	header("Location: /login");
+   	exit;
 });
 
 ?>

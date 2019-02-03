@@ -12,12 +12,14 @@ class User extends Model{
 
 	const SESSION = "User";
 	const SECRET = "HcodePhp7_secret";
+	const ERROR = "UserError";
+	const ERROR_REGISTER = "UserErrorRegister";
 
 	public static function getFromSession()//pegar dados do usuario pela sessão
 	{
 		$user = new User();
 
-		if (isset($_SESSION[User::SESSIOM]) && (int)$_SESSION[User::SESSION]['iduser'] > 0 )//verificar se a sessão esta definida
+		if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0 )//verificar se a sessão esta definida
 		{
 			
 
@@ -40,7 +42,7 @@ class User extends Model{
 		}else
 		{
 			//esta logado e pode acessar a adm ou só o site?
-			if($inadmin === true && $_SESSION[User::SESSION]['inadmin'] === true)
+			if($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true)
 				//esse if só vai acontecer se ele tentar acessar uma rota de adm
 			{
 
@@ -96,17 +98,23 @@ class User extends Model{
 
 		public static function verifyLogin($inadmin = true)//verifica se esta logado
 		{
-			if (User::checkLogin($inadmin))
+			if (!User::checkLogin($inadmin))
 			{
-				header("Location: /admin/login");
-				
-			}else{
-				header("Location: /login");
-			}
-			exit;
-			
-		}
+				if($inadmin){
 
+					header("Location: /admin/login");
+
+				}
+				else
+				{
+
+					header("Location: /login");
+				}
+
+				exit;
+							
+			}
+		}	
 		public static function logout()
 		{
 			$_SESSION[User::SESSION] = null;
@@ -302,6 +310,25 @@ class User extends Model{
 				":password"=>$password,
 				":iduser"=>$this->getiduser()
 			));
+		}
+
+		public static function setError($msg)
+		{
+			$_SESSION[User::ERROR] = $msg;
+		}
+
+		public static function getError()
+		{
+			$msg = (isset($_SESSION[User::ERROR]) && $_SESSION[User::ERROR]) ? $_SESSION[User::ERROR] : '';
+
+			User::clearError();
+
+			return $msg;
+		}
+
+		public static function clearError()
+		{
+			$_SESSION[User::ERROR] = NULL;
 		}
 
 		public function getPasswordHash($password)
