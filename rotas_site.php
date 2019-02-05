@@ -263,4 +263,69 @@ $app->post("/register", function(){
 
 });
 
+//********************************************************
+//**************** Parte Esqueci a senha *****************
+//********************************************************
+$app->get("/forgot", function(){
+
+	$page = new Page();
+
+	$page->setTpl("forgot");	
+
+});
+
+$app->post("/forgot", function(){
+
+	
+
+	$user = User::getForgot($_POST["email"], false);//metodo que recebe email por parametro
+
+	header("Location: /forgot/sent");
+	exit;
+
+});
+
+$app->get("/forgot/sent", function(){
+
+	$page = new Page();
+
+	$page->setTpl("forgot-sent");	
+
+});
+
+$app->get("/forgot/reset", function(){
+
+	$user = User::valideForgotDecrypt($_GET["code"]);//metodo para validar de que usuario pertence esse codigo
+
+	$page = new Page();
+
+	$page->setTpl("forgot-reset", array(
+		"name"=>$user["desperson"],
+		"code"=>$_GET["code"]
+	));	
+
+});
+
+$app->post("/forgot/reset", function(){
+
+	$forgot = User::valideForgotDecrypt($_POST["code"]);
+
+	User::setForgotUsed($forgot["idrecovery"]);//metodo para falar que esse metodo de recuperação já foi usado
+
+	$user = new User(); //carrega um obj do tipo usuario
+
+	$user->get((int)$forgot["iduser"]);//cria os setters
+
+	$password = password_hash($_POST["password"], PASSWORD_DEFAULT, ["cost"=>12
+	]);//criptografar antes de salvar no banco
+
+	$user->setPassword($password);//função para salvar a a nova senha
+
+		$page = new Page();
+
+	$page->setTpl("forgot-reset-success");
+
+
+});
+
 ?>
