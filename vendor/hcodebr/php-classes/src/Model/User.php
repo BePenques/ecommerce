@@ -331,11 +331,44 @@ class User extends Model{
 			$_SESSION[User::ERROR] = NULL;
 		}
 
+
+		public static function checkLoginExist($login)
+		{
+
+			$sql = new Sql();
+
+			$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+				':deslogin'=>$login
+			]);
+
+			return (count($results) > 0);
+
+		}
+
 		public function getPasswordHash($password)
 		{
 			return password_hash($password, PASSWORD_DEFAULT, [
 				'cost'=>12
 			]);
+		}
+
+		public static function setErrorRegister($msg)
+		{
+			$_SESSION[User::ERROR_REGISTER] = $msg;
+		}
+
+		public static function getErrorRegister()
+		{
+			$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+
+			User::clearErrorRegister();
+
+			return $msg;
+		}
+
+		public function clearErrorRegister()
+		{
+			$_SESSION[User::ERROR_REGISTER] = NULL;
 		}
 }
 
