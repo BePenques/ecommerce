@@ -20,6 +20,8 @@
 					<form action="/checkout" class="checkout" method="post" name="checkout">
 						<div id="customer_details" class="col2-set">
 							<div class="row">
+
+
 								<div class="col-md-12">
 									<?php if( $error != '' ){ ?>
 
@@ -62,7 +64,7 @@
 										<p id="billing_state_field" class="form-row form-row-first address-field validate-state" data-o_class="form-row form-row-first address-field validate-state">
 											<label class="" for="billing_state">País</label>
 											<input type="text" id="billing_state" name="descountry" placeholder="País" value="<?php echo htmlspecialchars( $address["descountry"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" class="input-text ">
-										</p>
+										
 										<div class="clear"></div>
 										<h3 id="order_review_heading" style="margin-top:30px;">Detalhes do Pedido</h3>
 										<div id="order_review" style="position: relative;">
