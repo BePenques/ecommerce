@@ -16,7 +16,7 @@ class Order extends Model
 			':idcart'=>$this->getidcart(),
 			':iduser'=>$this->getiduser(),
 			':idstatus'=>$this->getidstatus(),
-			':idaddress'=>$this->idaddress(),
+			':idaddress'=>$this->getidaddress(),
 			':vltotal'=>$this->getvltotal()
 
 		]);
