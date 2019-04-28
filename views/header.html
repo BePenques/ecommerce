@@ -99,7 +99,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> 
     </div> <!-- End site branding area -->
     
     <div class="mainmenu-area">

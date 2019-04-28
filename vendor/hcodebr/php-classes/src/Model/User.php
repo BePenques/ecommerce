@@ -93,7 +93,7 @@ class User extends Model{
 		}
 		else
 		{
-			throw new \Exception("Usuário inexistente ou senha invalida.");
+			throw new \Exception("Usuário inexistente ou senha invalidaa.");
 		}
 
 	}
@@ -187,7 +187,7 @@ class User extends Model{
 				":iduser"=>$this->getiduser(),
 				":desperson"=>utf8_decode($this->getdesperson()),
 				":deslogin"=>$this->getdeslogin(),
-				":despassword"=>$this->getdespassword(),
+				":despassword"=>User::getPasswordHash($this->getdespassword()),
 				":desemail"=>$this->getdesemail(),
 				":nrphone"=>$this->getnrphone(),
 				":inadmin"=>$this->getinadmin()
