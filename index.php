@@ -17,6 +17,7 @@ require_once("rotas_admin.php");
 require_once("rotas_admin-users.php");
 require_once("rotas_admin-categories.php");
 require_once("rotas_admin-products.php");
+require_once("admin-orders.php");
 
 
 
