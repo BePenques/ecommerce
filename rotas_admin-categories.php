@@ -11,12 +11,37 @@ $app->get("/admin/categories", function(){
 	//verifica se a pessoa esta logada ou não
 	User::verifyLogin();
 
-	$categories = Category::listAll();//uma classe Category com o metodo ListAll
+	$search = (isset($_GET['search'])) ? $_GET['search'] : "";
+
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
+
+	if($search != ''){
+
+		$pagination = Category::getPageSearch($search, $page);
+
+	}else{
+		$pagination = Category::getPage($page);
+	}
+
+	$pages = [];
+
+	for($x = 0; $x < $pagination['pages']; $x++)
+	{
+		array_push($pages, [
+		 'href'=>'/admin/users?'.http_build_query([
+            'page'=>$x+1,
+            'search'=>$search
+		 ]), 
+		 'text'=>$x+1
+		]);
+	}
 
 	$page = new PageAdmin();
 
 	$page->setTpl("categories", [
-		'categories'=>$categories//o template recebe um array
+		"categories"=>$pagination['data'],
+		"search"=>$search,
+		"pages"=>$pages
 	]);
 
 
